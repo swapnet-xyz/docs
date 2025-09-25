@@ -1,13 +1,17 @@
 # What is SwapNet
 
-SwapNet is a DEX aggregator.
+SwapNet is a high-performance DEX aggregator that finds the best prices for your trades by intelligently routing through all available onchain liquidity sources, including AMMs and private market makers.
 
-Like other aggregators, SwapNet attempts to find the best price for your trade, by routing through any onchain liquidity sources, including AMMs and private market makers.
+## Key Advantages
 
-Unlike others, SwapNet is lightning fast and more likely to find an better price.
+- **Lightning Fast**: Superior speed compared to other aggregators
+- **Better Pricing**: More likely to find optimal prices through advanced routing algorithms
+- **Comprehensive Coverage**: Trade all tokens with onchain liquidity
 
-More than an aggregator, benifited from its modularized design, SwapNet provides extensible and customizable routing services for sophisticated users, including solvers, market makers, Defi protocol builders, token issuers, and chain ecosystem owners.
+## Beyond Aggregation
 
-***
+More than just an aggregator, SwapNet's modularized architecture provides extensible and customizable routing services for sophisticated users, including solvers, market makers, DeFi protocol builders, token issuers, chain ecosystem builders, and more.
 
-_SwapNet - Building the future of decentralized liquidity aggregation_
+---
+
+*SwapNet - Aggregating fragmented DeFi liquidity for everyone*

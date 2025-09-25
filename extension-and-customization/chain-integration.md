@@ -1,6 +1,6 @@
 # Chain support
 
-* Start with low cost mode
+* Start with low cost mode which is slower
 * It normally takes less than 1 week for EVM chains
 
 

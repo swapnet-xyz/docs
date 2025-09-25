@@ -3,15 +3,15 @@
 ## Overview
 
 * [What is SwapNet](README.md)
-* [Modularized architecture](overview/aggregator-as-a-service.md)
-* [Contact us](overview/contact-us.md)
+* [Compatitive performance](overview/compatitive-performance.md)
+* [Modularized design](overview/aggregator-as-a-service.md)
 
 ## Get started
 
-* [Get API key](get-started/get-api-key.md)
 * [Call API](get-started/call-api.md)
 * [Settle the trade](get-started/settle-the-trade.md)
 * [Example with SDK](get-started/example-with-sdk.md)
+* [Contact us](get-started/contact-us.md)
 
 ## Aggregator API
 

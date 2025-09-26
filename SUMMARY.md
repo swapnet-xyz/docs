@@ -16,10 +16,10 @@
 
 ## Aggregator API
 
+* [/swap](aggregator-api/swap.md)
 * [/chains](aggregator-api/chains.md)
 * [/chainInfo](aggregator-api/chaininfo.md)
 * [/tokens](aggregator-api/tokens.md)
-* [/swap](aggregator-api/swap.md)
 
 ## Extension & Customization
 

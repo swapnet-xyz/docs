@@ -8,10 +8,8 @@
 
 ## Get started
 
-* [Call API](get-started/call-api.md)
-* [Settle the trade](get-started/settle-the-trade.md)
-* [Example with SDK](get-started/example-with-sdk.md)
-* [Contact us](get-started/contact-us.md)
+* [Use REST API](get-started/use-rest-api.md)
+* [Use SDK](get-started/use-sdk.md)
 
 ## Aggregator API
 

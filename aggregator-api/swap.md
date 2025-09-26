@@ -21,10 +21,10 @@ https://app.swap-net.xyz/api/v1.0/swap
 | Name                | Required?                        | Description                                 | Valid values                                                                                                                                              |
 | ------------------- | -------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `chainId`           | Yes                              | Integer ID of the blockchain                | Chain IDs defined [here](https://github.com/swapnet-xyz/swapnet-sdk/blob/3ebb3511cd6abcf672b6f11742278b1ae1ba4e21/src/common/unames.ts#L3-L16)            |
-| `sellToken`         | Yes                              | Address of sell token                       | Blockchain addresses                                                                                                                                      |
-| `buyToken`          | Yes                              | Address of buy token                        | Blockchain addresses                                                                                                                                      |
-| `sellAmount`        | Yes\*                            | Amount of sellToken to sell in base unit    | Positive numbers                                                                                                                                          |
-| `buyAmount`         | Yes\*                            | Amount of buyToken to buy in base unit      | Positive numbers                                                                                                                                          |
+| `sellToken`         | Yes                              | Address of sell token¹                      | Blockchain addresses                                                                                                                                      |
+| `buyToken`          | Yes                              | Address of buy token¹                       | Blockchain addresses                                                                                                                                      |
+| `sellAmount`        | Yes²                             | Amount of sellToken to sell in base unit    | Positive numbers                                                                                                                                          |
+| `buyAmount`         | Yes²                             | Amount of buyToken to buy in base unit      | Positive numbers                                                                                                                                          |
 | `useRfq`            | No (default to `false`)          | Whether to use market makers' RFQ liquidity | `boolean`                                                                                                                                                 |
 | `router`            | No (default to `default-router`) | Name of router contract                     | Router unique names defined [here](https://github.com/swapnet-xyz/swapnet-sdk/blob/3ebb3511cd6abcf672b6f11742278b1ae1ba4e21/src/common/unames.ts#L64-L74) |
 | `includeCalldata`   | No (default to `false`)          | Whether to include calldata in the response | `boolean`                                                                                                                                                 |
@@ -32,7 +32,9 @@ https://app.swap-net.xyz/api/v1.0/swap
 | `slippageTolerance` | Yes if `includeCalldata=true`    | Slippage tolerance (`0.01` for 1%)          | Numbers between 0 and 1                                                                                                                                   |
 | `apiKey`            | Yes                              | Your API Key                                | `string`                                                                                                                                                  |
 
-\*Notice that one and only one of `sellAmount` and `buyAmount` will be accepted!
+¹ Use `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee` for native tokens.
+
+² Notice that one and only one of `sellAmount` and `buyAmount` will be accepted!
 
 ### Simple query example
 

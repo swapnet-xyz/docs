@@ -2,27 +2,29 @@
 
 ## Overview
 
-Unlike most other DEX aggregaters, SwapNet API directly provides routing plans instead of calldata. The routing plan tells the amount and tokens to trade with each liquidity (either AMMs or market maker liquidity). On client side, with user selected router contract, our SDK will be able to encode the routing plans into calldata for settlements.
+Unlike most DEX aggregators, our swap endpoint provides graph-based routing plans with optional on-demand calldata generation. Each routing plan specifies the exact amounts and tokens to trade with various liquidity sources, including AMMs and market maker liquidity.
 
-By establishing a standard for routing plans, our approach will decouple the selection of aggregator API from router contract - ideally the result of any aggregator API should be able to settled by any router contracts.
+When calldata is not requested, clients can use an encoder to convert the routing plans into transaction calldata for any compatible router contract. This flexibility allows you to choose the most suitable router for your specific use case.
+
+By establishing a standardized format for routing plans, our approach decouples the aggregator API from specific router contracts. This standardization enables seamless encoding and settlement of routing results from any compatible aggregator using any supported router contract.
 
 ## API schema
 
-#### Swap endpoint
+### Swap endpoint
 
 ```bash
 https://app.swap-net.xyz/api/v1.0/swap
 ```
 
-#### Parameters
+### Parameters
 
 | Name                | Required?                        | Description                                 | Valid values                                                                                                                                              |
 | ------------------- | -------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `chainId`           | Yes                              | Integer ID of the blockchain                | Chain IDs defined [here](https://github.com/swapnet-xyz/swapnet-sdk/blob/3ebb3511cd6abcf672b6f11742278b1ae1ba4e21/src/common/unames.ts#L3-L16)            |
-| `sellToken`         | Yes                              | Address of sell token                       | Blockchain addresses                                                                                                                                      |
-| `buyToken`          | Yes                              | Address of buy token                        | Blockchain addresses                                                                                                                                      |
-| `sellAmount`        | Yes\*                            | Amount of sellToken to sell in base unit    | Positive numbers                                                                                                                                          |
-| `buyAmount`         | Yes\*                            | Amount of buyToken to buy in base unit      | Positive numbers                                                                                                                                          |
+| `sellToken`         | Yes                              | Address of sell token¹                      | Blockchain addresses                                                                                                                                      |
+| `buyToken`          | Yes                              | Address of buy token¹                       | Blockchain addresses                                                                                                                                      |
+| `sellAmount`        | Yes²                             | Amount of sellToken to sell in base unit    | Positive numbers                                                                                                                                          |
+| `buyAmount`         | Yes²                             | Amount of buyToken to buy in base unit      | Positive numbers                                                                                                                                          |
 | `useRfq`            | No (default to `false`)          | Whether to use market makers' RFQ liquidity | `boolean`                                                                                                                                                 |
 | `router`            | No (default to `default-router`) | Name of router contract                     | Router unique names defined [here](https://github.com/swapnet-xyz/swapnet-sdk/blob/3ebb3511cd6abcf672b6f11742278b1ae1ba4e21/src/common/unames.ts#L64-L74) |
 | `includeCalldata`   | No (default to `false`)          | Whether to include calldata in the response | `boolean`                                                                                                                                                 |
@@ -30,12 +32,19 @@ https://app.swap-net.xyz/api/v1.0/swap
 | `slippageTolerance` | Yes if `includeCalldata=true`    | Slippage tolerance (`0.01` for 1%)          | Numbers between 0 and 1                                                                                                                                   |
 | `apiKey`            | Yes                              | Your API Key                                | `string`                                                                                                                                                  |
 
-\*Notice that one and only one of `sellAmount` and `buyAmount` will be accepted!
+¹ Use `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee` for native tokens.
 
-#### Simple query example
+² Notice that one and only one of `sellAmount` and `buyAmount` will be accepted!
+
+### Simple query example
 
 ```bash
-curl "<https://app.swap-net.xyz/api/v1.0/swap?chainId=1&sellToken=0x853d955acef822db058eb8505911ed77f175b99e&buyToken=0x1f9840a85d5af5bf1d1762f925bdaddc4201f984&sellAmount=10000000000000000000000&apiKey=><Your API Key>"
+curl "https://app.swap-net.xyz/api/v1.0/swap\
+?chainId=1\
+&sellToken=0x853d955acef822db058eb8505911ed77f175b99e\
+&buyToken=0x1f9840a85d5af5bf1d1762f925bdaddc4201f984\
+&sellAmount=10000000000000000000000\
+&apiKey=<Your API Key>"
 ```
 
 Response includes:
@@ -191,11 +200,21 @@ Response includes:
 }
 ```
 
-#### Example with `includeCalldata=true`
+### Example with `includeCalldata=true`
 
 ```bash
 
-curl "<https://app.swap-net.xyz/api/v1.0/swap?chainId=999&sellToken=0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb&buyToken=0x5555555555555555555555555555555555555555&sellAmount=10000000000&useRfq=true&includeCalldata=true&userAddress=0x11b86991c6218b36c1d19d4a2e9eb0ce3606eb49&slippageTolerance=0.01&router=swapnet-router&apiKey=><Your API Key>"
+curl "https://app.swap-net.xyz/api/v1.0/swap\
+?chainId=999\
+&sellToken=0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb\
+&buyToken=0x5555555555555555555555555555555555555555\
+&sellAmount=10000000000\
+&useRfq=true\
+&includeCalldata=true\
+&userAddress=0x11b86991c6218b36c1d19d4a2e9eb0ce3606eb49\
+&slippageTolerance=0.01\
+&router=swapnet-router\
+&apiKey=<Your API Key>"
 ```
 
 Response includes three more fields:

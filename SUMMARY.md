@@ -2,9 +2,9 @@
 
 ## Overview
 
-* [What is SwapNet](README.md)
-* [Compatitive performance](overview/compatitive-performance.md)
-* [Modularized design](overview/aggregator-as-a-service.md)
+* [What is SwapNet](overview/what-is-swapnet.md)
+* [Competitive performance](overview/competitive-performance.md)
+* [Modularized design](overview/modularized-architecture.md)
 
 ## Get started
 

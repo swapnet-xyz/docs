@@ -1,24 +1,5 @@
 # Using the REST API
 
-## Getting Your API Key
-
-### Option 1: Telegram Bot (Recommended)
-
-If you have a Telegram account, you can quickly obtain your API key through our [demo bot](https://t.me/SwapNetDemoBot):
-
-1. Open the bot and navigate to the main menu
-2. Select "More..."
-3. Click "Get API key"
-
-**Note:** Each Telegram account can create one API key. If you've already created a key, the bot will return your existing one.
-
-### Option 2: Email Request
-
-If you don't use Telegram or need additional API keys, please [request an API key](mailto:info@swap-net.xyz?subject=Request%20for%20API%20key) via email.
-
-
-## Making API Calls
-
 To get a swap quote, make a GET request to the swap endpoint with the required parameters:
 
 ```bash
@@ -58,41 +39,3 @@ The response contains several key components:
   - `calldata`: Pre-encoded transaction data for the specified router
   - `routerAddress`: Target contract address  
   - `gasLimit`: Suggested gas limit for the transaction
-
-## Executing the Trade
-
-Once you have the API response with the `calldata`, executing the trade is straightforward. Follow these steps to prepare, sign, and send the transaction using your wallet.
-
-### Implementation Example (TypeScript)
-
-```typescript
-const {
-    routerAddress,
-    calldata,
-    gasLimit,
-} = swapResponse;
-
-// Approve the router contract to spend your sell tokens
-await approveAsync(sellToken, wallet, routerAddress);
-
-// Build the transaction
-const unsignedTx = await wallet.populateTransaction({
-    to: routerAddress,
-    data: calldata,
-    gasLimit: gasLimit,
-    // Configure gas pricing for EIP-1559 transactions
-    type: 2,
-    maxFeePerGas,
-    maxPriorityFeePerGas,
-});
-
-// Sign and send the transaction
-const tx = await wallet.sendTransaction(unsignedTx);
-```
-
-### Prerequisites
-
-Before executing the trade, ensure that:
-1. Your wallet has sufficient balance of the sell token
-2. You've approved the router contract to spend your tokens
-3. Your wallet has enough ETH (or native token) to cover gas fees

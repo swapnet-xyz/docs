@@ -8,17 +8,18 @@
 
 ## Get started
 
-* [Call API](get-started/call-api.md)
-* [Settle the trade](get-started/settle-the-trade.md)
-* [Example with SDK](get-started/example-with-sdk.md)
-* [Contact us](get-started/contact-us.md)
+* [Getting your API key](get-started/getting-your-api-key.md)
+* [Using the REST API](get-started/using-the-sdk.md)
+* [Using the SDK](get-started/using-the-sdk.md)
+* [Executing the trade](get-started/executing-the-trade.md)
+* [Next steps](get-started/next-steps.md)
 
 ## Aggregator API
 
 * [/chains](aggregator-api/chains.md)
 * [/chainInfo](aggregator-api/chaininfo.md)
 * [/tokens](aggregator-api/tokens.md)
-* [/swap](aggregator-api/api.md)
+* [/swap](aggregator-api/swap.md)
 
 ## Extension & Customization
 

@@ -9,7 +9,7 @@
 ## Get started
 
 * [Getting your API key](get-started/getting-your-api-key.md)
-* [Using the REST API](get-started/using-the-sdk.md)
+* [Using the REST API](get-started/using-the-rest-api.md)
 * [Using the SDK](get-started/using-the-sdk.md)
 * [Executing the trade](get-started/executing-the-trade.md)
 * [Next steps](get-started/next-steps.md)

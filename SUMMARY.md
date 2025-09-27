@@ -32,14 +32,14 @@
 
 * [API](reference/api/README.md)
   * ```yaml
-    props:
-      models: false
     type: builtin:openapi
+    props:
+      models: true
     dependencies:
       spec:
         ref:
           kind: openapi
-          spec: swapnet-openapi
+          spec: swap-openapi
     ```
 * [Contract](reference/contract/README.md)
   * [Deployment addresses](reference/contract/deployment-addresses.md)

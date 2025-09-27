@@ -52,8 +52,8 @@ Response includes:
 | Field name            | Description                                                                                                                                                                         |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `tokens`              | Metadata of a list of tokens involved in the routing result. Including token’s `address`, `name`, `symbol`, `decimals`, `usdPrice`, and a `referenceId` used to refer to the token. |
-| `sell`                | Sell token’s `referenceId` and `amount` to sell.                                                                                                                                    |
-| `buy`                 | Buy token’s `referenceId` and `amount` to buy.                                                                                                                                      |
+| `sell`                | `referenceId` and `amount` of token user want to sell, and also include boolean field `wrapFromNative` if sell token is native token.                                                                                                                                    |
+| `buy`                 | `referenceId` and `amount` of token user want to buy, and also include boolean field `unwrapToNative` if buy token is native token.                                                                                                                                      |
 | `nativeTokenUsdPrice` | Current price of native token on this chain.                                                                                                                                        |
 | `routes`              | A collection of swaps forming a directed acyclic graph that converts all sell tokens into buy tokens. Notice that the orders of the routes are not guaranteed.                      |
 | `route.name`          | Name of liquidity source used by this route (swap).                                                                                                                                 |
@@ -61,6 +61,9 @@ Response includes:
 | `route.fromToken`     | `referenceId` and `amount` of token to swap from.                                                                                                                                   |
 | `route.toToken`       | `referenceId` and `amount` of token to swap to.                                                                                                                                     |
 | `route.details`       | Additional info about this route (swap) which is used during encoding.                                                                                                              |
+
+<details>
+<summary>Click to view example response</summary>
 
 ```bash
 {
@@ -200,6 +203,8 @@ Response includes:
 }
 ```
 
+</details>
+
 ### Example with `includeCalldata=true`
 
 ```bash
@@ -224,6 +229,9 @@ Response includes three more fields:
 | `routerAddress` | Address of router contract                                    |
 | `calldata`      | Calldata to settle the trade with the router contract         |
 | `gasLimit`      | An estimate of upper bound of gas cost, used to config the TX |
+
+<details>
+<summary>Click to view example response with calldata</summary>
 
 ```bash
 {
@@ -363,3 +371,5 @@ Response includes three more fields:
   "gasLimit": "1200000"
 }
 ```
+
+</details>

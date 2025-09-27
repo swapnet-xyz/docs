@@ -1,0 +1,460 @@
+openapi: 3.0.3
+info:
+  title: SwapNet Aggregator API
+  description: |
+    SwapNet's swap endpoint provides graph-based routing plans with optional on-demand calldata generation. 
+    Each routing plan specifies the exact amounts and tokens to trade with various liquidity sources, 
+    including AMMs and market maker liquidity.
+    
+    Unlike most DEX aggregators, this API decouples the aggregator from specific router contracts by 
+    providing standardized routing plans that can be encoded for any compatible router contract.
+  version: 1.0.0
+  contact:
+    name: SwapNet
+    url: https://swap-net.xyz
+servers:
+  - url: https://app.swap-net.xyz/api/v1.0
+    description: Production server
+
+paths:
+  /swap:
+    get:
+      summary: Get swap routing plan
+      description: |
+        Returns a graph-based routing plan for swapping tokens. The plan includes detailed routes 
+        through various liquidity sources and can optionally include encoded calldata for immediate execution.
+      operationId: getSwapRoute
+      parameters:
+        - name: chainId
+          in: query
+          required: true
+          description: Integer ID of the blockchain
+          schema:
+            type: integer
+            enum: [1, 137, 56, 43114, 42161, 10, 8453, 324, 534352, 81457, 999]
+          example: 1
+        
+        - name: sellToken
+          in: query
+          required: true
+          description: |
+            Address of sell token. For native tokens, use either 
+            `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee`
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+          example: "0x853d955acef822db058eb8505911ed77f175b99e"
+        
+        - name: buyToken
+          in: query
+          required: true
+          description: |
+            Address of buy token. For native tokens, use either 
+            `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee`
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+          example: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
+        
+        - name: sellAmount
+          in: query
+          required: false
+          description: |
+            Amount of sellToken to sell (in base units). 
+            Exactly one of sellAmount or buyAmount must be provided.
+          schema:
+            type: string
+            pattern: '^[1-9][0-9]*$'
+          example: "10000000000000000000000"
+        
+        - name: buyAmount
+          in: query
+          required: false
+          description: |
+            Amount of buyToken to buy (in base units). 
+            Exactly one of sellAmount or buyAmount must be provided.
+          schema:
+            type: string
+            pattern: '^[1-9][0-9]*$'
+          example: "1000000000000000000"
+        
+        - name: useRfq
+          in: query
+          required: false
+          description: Whether to use market maker RFQ liquidity
+          schema:
+            type: boolean
+            default: false
+          example: false
+        
+        - name: router
+          in: query
+          required: false
+          description: Router contract unique name
+          schema:
+            type: string
+            enum: [
+              "default-router",
+              "swapnet-router", 
+              "universal-router",
+              "permit2-router",
+              "1inch-router"
+            ]
+            default: "default-router"
+          example: "default-router"
+        
+        - name: includeCalldata
+          in: query
+          required: false
+          description: Whether to include calldata in the response
+          schema:
+            type: boolean
+            default: false
+          example: false
+        
+        - name: userAddress
+          in: query
+          required: false
+          description: |
+            User's wallet address. Required when includeCalldata=true
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+          example: "0x11b86991c6218b36c1d19d4a2e9eb0ce3606eb49"
+        
+        - name: slippageTolerance
+          in: query
+          required: false
+          description: |
+            Slippage tolerance (0.01 = 1%). Required when includeCalldata=true
+          schema:
+            type: number
+            minimum: 0
+            maximum: 1
+            multipleOf: 0.0001
+          example: 0.01
+        
+        - name: apiKey
+          in: query
+          required: true
+          description: Your API key
+          schema:
+            type: string
+          example: "your-api-key-here"
+
+      responses:
+        '200':
+          description: Successful swap routing response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwapResponse'
+              examples:
+                basic_response:
+                  summary: Basic response without calldata
+                  value:
+                    aggregator: "swapnet"
+                    router: "default-router"
+                    sell:
+                      referenceId: 7
+                      amount: "10000000000000000000000"
+                    buy:
+                      referenceId: 6
+                      amount: "1034955025987043448356"
+                    nativeTokenUsdPrice: 4622.638914277432
+                    tokens:
+                      - referenceId: 7
+                        address: "0x853d955acef822db058eb8505911ed77f175b99e"
+                        name: "Frax"
+                        symbol: "FRAX"
+                        decimals: 18
+                        usdPrice: 0.9985832349359104
+                      - referenceId: 6
+                        address: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
+                        name: "Uniswap"
+                        symbol: "UNI"
+                        decimals: 18
+                        usdPrice: 9.632281172169868
+                    routes:
+                      - address: "0xc63b0708e2f7e69cb8a1df0e1389a98c35a76d52"
+                        name: "UniswapV3"
+                        details:
+                          fee: 500
+                        fromTokens:
+                          - referenceId: 7
+                            amount: "10000000000000000000000"
+                        toTokens:
+                          - referenceId: 6
+                            amount: "1034955025987043448356"
+                
+                with_calldata:
+                  summary: Response with calldata included
+                  value:
+                    aggregator: "swapnet"
+                    router: "swapnet-router"
+                    sell:
+                      referenceId: 1
+                      amount: "10000000000"
+                    buy:
+                      referenceId: 0
+                      amount: "170261032657489111452"
+                    nativeTokenUsdPrice: 58.75669929845798
+                    tokens:
+                      - referenceId: 0
+                        address: "0x5555555555555555555555555555555555555555"
+                        name: "Wrapped HYPE"
+                        symbol: "WHYPE"
+                        decimals: 18
+                        usdPrice: 58.75669929845798
+                    routes:
+                      - address: "0xbd19e19e4b70eb7f248695a42208bc1edbbfb57d"
+                        name: "ProjectxV3"
+                        details:
+                          fee: 500
+                        fromTokens:
+                          - referenceId: 1
+                            amount: "2791261914"
+                        toTokens:
+                          - referenceId: 0
+                            amount: "47522431692592024830"
+                    routerAddress: "0x616000e384Ef1C2B52f5f3A88D57a3B64F23757e"
+                    calldata: "0x87395540000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001c00000000000000000000000000000000000000000000000092337d00c9669a93100000000000000000000000011b86991c6218b36c1d19d4a2e9eb0ce3606eb49"
+                    gasLimit: "1200000"
+        
+        '400':
+          description: Bad request - Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+        '401':
+          description: Unauthorized - Invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    SwapResponse:
+      type: object
+      required:
+        - aggregator
+        - router
+        - sell
+        - buy
+        - nativeTokenUsdPrice
+        - tokens
+        - routes
+      properties:
+        aggregator:
+          type: string
+          description: Name of the aggregator service
+          example: "swapnet"
+        
+        router:
+          type: string
+          description: Router contract unique name used
+          example: "default-router"
+        
+        sell:
+          $ref: '#/components/schemas/TradeToken'
+        
+        buy:
+          $ref: '#/components/schemas/TradeToken'
+        
+        nativeTokenUsdPrice:
+          type: number
+          description: Current price of the native token on this chain
+          example: 4622.638914277432
+        
+        tokens:
+          type: array
+          description: Metadata of tokens involved in the routing result
+          items:
+            $ref: '#/components/schemas/Token'
+        
+        routes:
+          type: array
+          description: Collection of swaps forming a directed acyclic graph
+          items:
+            $ref: '#/components/schemas/Route'
+        
+        routerAddress:
+          type: string
+          description: Address of router contract (only when includeCalldata=true)
+          pattern: '^0x[a-fA-F0-9]{40}$'
+          example: "0x616000e384Ef1C2B52f5f3A88D57a3B64F23757e"
+        
+        calldata:
+          type: string
+          description: Calldata to settle the trade (only when includeCalldata=true)
+          pattern: '^0x[a-fA-F0-9]*$'
+          example: "0x87395540000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001c0"
+        
+        gasLimit:
+          type: string
+          description: Estimated upper bound of gas consumption (only when includeCalldata=true)
+          example: "1200000"
+
+    TradeToken:
+      type: object
+      required:
+        - referenceId
+        - amount
+      properties:
+        referenceId:
+          type: integer
+          description: Reference ID of the token in the tokens array
+          example: 7
+        
+        amount:
+          type: string
+          description: Amount of the token in base units
+          example: "10000000000000000000000"
+        
+        wrapFromNative:
+          type: boolean
+          description: Whether the sell token is native token that needs wrapping
+          example: true
+        
+        unwrapToNative:
+          type: boolean
+          description: Whether the buy token is native token that needs unwrapping
+          example: true
+
+    Token:
+      type: object
+      required:
+        - referenceId
+        - address
+        - name
+        - symbol
+        - decimals
+        - usdPrice
+      properties:
+        referenceId:
+          type: integer
+          description: Unique reference ID for this token
+          example: 7
+        
+        address:
+          type: string
+          description: Token contract address
+          pattern: '^0x[a-fA-F0-9]{40}$'
+          example: "0x853d955acef822db058eb8505911ed77f175b99e"
+        
+        name:
+          type: string
+          description: Token name
+          example: "Frax"
+        
+        symbol:
+          type: string
+          description: Token symbol
+          example: "FRAX"
+        
+        decimals:
+          type: integer
+          description: Number of decimal places for the token
+          minimum: 0
+          maximum: 18
+          example: 18
+        
+        usdPrice:
+          type: number
+          description: Current USD price of the token
+          example: 0.9985832349359104
+
+    Route:
+      type: object
+      required:
+        - address
+        - name
+        - fromTokens
+        - toTokens
+      properties:
+        address:
+          type: string
+          description: Address of the liquidity pool
+          pattern: '^0x[a-fA-F0-9]{40}$'
+          example: "0xc63b0708e2f7e69cb8a1df0e1389a98c35a76d52"
+        
+        name:
+          type: string
+          description: Name of the liquidity source
+          example: "UniswapV3"
+        
+        details:
+          type: object
+          description: Additional information about this route used during encoding
+          additionalProperties: true
+          example:
+            fee: 500
+        
+        fromTokens:
+          type: array
+          description: Tokens to swap from
+          items:
+            $ref: '#/components/schemas/RouteToken'
+        
+        toTokens:
+          type: array
+          description: Tokens to swap to  
+          items:
+            $ref: '#/components/schemas/RouteToken'
+
+    RouteToken:
+      type: object
+      required:
+        - referenceId
+        - amount
+      properties:
+        referenceId:
+          type: integer
+          description: Reference ID of the token in the tokens array
+          example: 7
+        
+        amount:
+          type: string
+          description: Amount of the token in base units
+          example: "10000000000000000000000"
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type
+          example: "BAD_REQUEST"
+        
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Missing required parameter: sellToken"
+        
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: apiKey
+      description: API key for authentication
+
+security:
+  - ApiKeyAuth: []

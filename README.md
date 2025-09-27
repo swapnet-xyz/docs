@@ -1,17 +1,18 @@
-# SwapNet Documentation
+# Overview
 
-This repository contains the official documentation for SwapNet's modularized aggregator-as-a-service platform.
+## What is SwapNet
 
-## Overview
+SwapNet is a high-performance DEX aggregator that finds the best prices for your trades by intelligently routing through all available onchain liquidity sources, including AMMs and private market makers.
 
-SwapNet provides extensible and customizable routing services through a modular architecture that decouples chain operations, liquidity sources, and router contracts from the core optimization engine.
+### Key Advantages
 
-## Key Features
+- **Lightning Fast**: Superior speed compared to other aggregators
+- **Better Pricing**: More likely to find optimal prices through advanced routing algorithms
+- **Comprehensive Coverage**: Trade all tokens with onchain liquidity
 
-- **Superior Performance**: Fast, reliable routing with better prices through advanced optimization algorithms
-- **Fast Integration**: New chain support in 30 minutes, new liquidity sources in hours
-- **Universal Compatibility**: Support for multiple router contracts and execution methods
-- **Custom Routing**: Users can prioritize preferred liquidity and use custom router contracts
+### Beyond Aggregation
+
+More than just an aggregator, SwapNet's modularized architecture provides extensible and customizable routing services for sophisticated users, including solvers, market makers, DeFi protocol builders, token issuers, chain ecosystem builders, and more.
 
 ## Documentation Structure
 
@@ -23,8 +24,18 @@ SwapNet provides extensible and customizable routing services through a modular 
 
 ## Contributing
 
-This documentation is part of SwapNet's public documentation. For updates and contributions, please follow the standard Git workflow.
+This is SwapNet's public documentation. For updates and contributions, please follow the standard Git workflow.
 
-## Links
+## Links & Resources
 
-- [SwapNet Platform](https://www.swapnet.xyz)
+### Official Channels
+- **[SwapNet Website](https://www.swap-net.xyz)** - Official product information
+
+### Community & Support
+- **[GitHub Repository](https://github.com/swapnet-xyz)** - Source code of SDK, docs and other libraries
+- **[Twitter/X](https://x.com/0xswapnet)** - Latest news and announcements
+- **[Telegram Community](https://t.me/swapnetxyz)** - Join discussions with the SwapNet community
+- **[Demo Trading Bot](https://t.me/SwapNetDemoBot)** - Try SwapNet's features through Telegram
+---
+
+*SwapNet - Aggregating fragmented DeFi liquidity for everyone*

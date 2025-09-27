@@ -2,7 +2,7 @@
 
 ## Overview
 
-* [What is SwapNet](overview/what-is-swapnet.md)
+* [What is SwapNet](README.md)
 * [Competitive performance](overview/competitive-performance.md)
 * [Modularized design](overview/modularized-architecture.md)
 

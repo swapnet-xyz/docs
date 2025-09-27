@@ -28,10 +28,7 @@ This is SwapNet's public documentation. For updates and contributions, please fo
 
 ## Links & Resources
 
-### Official Channels
 - **[SwapNet Website](https://www.swap-net.xyz)** - Official product information
-
-### Community & Support
 - **[GitHub Repository](https://github.com/swapnet-xyz)** - Source code of SDK, docs and other libraries
 - **[Twitter/X](https://x.com/0xswapnet)** - Latest news and announcements
 - **[Telegram Community](https://t.me/swapnetxyz)** - Join discussions with the SwapNet community

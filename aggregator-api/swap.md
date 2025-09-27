@@ -23,18 +23,18 @@ https://app.swap-net.xyz/api/v1.0/swap
 | `chainId`           | Yes                              | Integer ID of the blockchain                | Chain IDs defined [here](https://github.com/swapnet-xyz/swapnet-sdk/blob/3ebb3511cd6abcf672b6f11742278b1ae1ba4e21/src/common/unames.ts#L3-L16)            |
 | `sellToken`         | Yes                              | Address of sell token¹                      | Blockchain addresses                                                                                                                                      |
 | `buyToken`          | Yes                              | Address of buy token¹                       | Blockchain addresses                                                                                                                                      |
-| `sellAmount`        | Yes²                             | Amount of sellToken to sell in base unit    | Positive numbers                                                                                                                                          |
-| `buyAmount`         | Yes²                             | Amount of buyToken to buy in base unit      | Positive numbers                                                                                                                                          |
-| `useRfq`            | No (default to `false`)          | Whether to use market makers' RFQ liquidity | `boolean`                                                                                                                                                 |
-| `router`            | No (default to `default-router`) | Name of router contract                     | Router unique names defined [here](https://github.com/swapnet-xyz/swapnet-sdk/blob/3ebb3511cd6abcf672b6f11742278b1ae1ba4e21/src/common/unames.ts#L64-L74) |
-| `includeCalldata`   | No (default to `false`)          | Whether to include calldata in the response | `boolean`                                                                                                                                                 |
+| `sellAmount`        | Yes²                             | Amount of sellToken to sell (in base units) | Positive integers                                                                                                                                          |
+| `buyAmount`         | Yes²                             | Amount of buyToken to buy (in base units)   | Positive integers                                                                                                                                          |
+| `useRfq`            | No (default: `false`)            | Whether to use market maker RFQ liquidity | `boolean`                                                                                                                                                 |
+| `router`            | No (default: `default-router`)   | Router contract unique name                   | Router unique names defined [here](https://github.com/swapnet-xyz/swapnet-sdk/blob/3ebb3511cd6abcf672b6f11742278b1ae1ba4e21/src/common/unames.ts#L64-L74) |
+| `includeCalldata`   | No (default: `false`)            | Whether to include calldata in the response | `boolean`                                                                                                                                                 |
 | `userAddress`       | Yes if `includeCalldata=true`    | User’s wallet address                       | Blockchain addresses                                                                                                                                      |
-| `slippageTolerance` | Yes if `includeCalldata=true`    | Slippage tolerance (`0.01` for 1%)          | Numbers between 0 and 1                                                                                                                                   |
-| `apiKey`            | Yes                              | Your API Key                                | `string`                                                                                                                                                  |
+| `slippageTolerance` | Yes if `includeCalldata=true`    | Slippage tolerance (`0.01` = 1%)   | Decimal numbers between 0 and 1                                                                                                                                   |
+| `apiKey`            | Yes                              | Your API key                 | `string`                                                                                                                                                  |
 
-¹ Use `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee` for native tokens.
+¹ For native tokens, use either `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee` as the token address.
 
-² Notice that one and only one of `sellAmount` and `buyAmount` will be accepted!
+² Exactly one of `sellAmount` or `buyAmount` must be provided, but not both. Specify `sellAmount` for exact-input swaps or `buyAmount` for exact-output swaps.
 
 ### Simple query example
 
@@ -51,16 +51,19 @@ Response includes:
 
 | Field name            | Description                                                                                                                                                                         |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tokens`              | Metadata of a list of tokens involved in the routing result. Including token’s `address`, `name`, `symbol`, `decimals`, `usdPrice`, and a `referenceId` used to refer to the token. |
-| `sell`                | Sell token’s `referenceId` and `amount` to sell.                                                                                                                                    |
-| `buy`                 | Buy token’s `referenceId` and `amount` to buy.                                                                                                                                      |
-| `nativeTokenUsdPrice` | Current price of native token on this chain.                                                                                                                                        |
-| `routes`              | A collection of swaps forming a directed acyclic graph that converts all sell tokens into buy tokens. Notice that the orders of the routes are not guaranteed.                      |
-| `route.name`          | Name of liquidity source used by this route (swap).                                                                                                                                 |
-| `route.address`       | Address of liquidity pool.                                                                                                                                                          |
-| `route.fromToken`     | `referenceId` and `amount` of token to swap from.                                                                                                                                   |
-| `route.toToken`       | `referenceId` and `amount` of token to swap to.                                                                                                                                     |
-| `route.details`       | Additional info about this route (swap) which is used during encoding.                                                                                                              |
+| `tokens`              | Metadata of a list of tokens involved in the routing result. Including token's `address`, `name`, `symbol`, `decimals`, `usdPrice`, and a `referenceId` used to refer to the token. |
+| `sell`                | Contains `referenceId` and `amount` of the token the user wants to sell, and may include a `wrapFromNative` boolean field if the sell token is native token.                                                                                                                                    |
+| `buy`                 | Contains `referenceId` and `amount` of the token the user wants to buy, and may include an `unwrapToNative` boolean field if the buy token is native token.                                                                                                                                      |
+| `nativeTokenUsdPrice` | Current price of the native token on this chain.                                                                                                                                        |
+| `routes`              | A collection of swaps forming a directed acyclic graph that converts all sell tokens into buy tokens. Note that the order of the routes is not guaranteed.                      |
+| `route.name`          | Name of the liquidity source used by this route (swap).                                                                                                                                 |
+| `route.address`       | Address of the liquidity pool.                                                                                                                                                          |
+| `route.fromTokens`    | Array containing `referenceId` and `amount` of tokens to swap from.                                                                                                                                   |
+| `route.toTokens`      | Array containing `referenceId` and `amount` of tokens to swap to.                                                                                                                                     |
+| `route.details`       | Additional information about this route (swap) which is used during encoding.                                                                                                              |
+
+<details>
+<summary>Click to view example response</summary>
 
 ```bash
 {
@@ -200,10 +203,11 @@ Response includes:
 }
 ```
 
+</details>
+
 ### Example with `includeCalldata=true`
 
 ```bash
-
 curl "https://app.swap-net.xyz/api/v1.0/swap\
 ?chainId=999\
 &sellToken=0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb\
@@ -223,7 +227,10 @@ Response includes three more fields:
 | --------------- | ------------------------------------------------------------- |
 | `routerAddress` | Address of router contract                                    |
 | `calldata`      | Calldata to settle the trade with the router contract         |
-| `gasLimit`      | An estimate of upper bound of gas cost, used to config the TX |
+| `gasLimit`      | An estimated upper bound of gas consumption, used to config the TX |
+
+<details>
+<summary>Click to view example response with calldata</summary>
 
 ```bash
 {
@@ -363,3 +370,5 @@ Response includes three more fields:
   "gasLimit": "1200000"
 }
 ```
+
+</details>

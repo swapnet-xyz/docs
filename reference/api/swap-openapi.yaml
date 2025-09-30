@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: SwapNet Aggregator API
   description: |
-    SwapNet's swap endpoint provides graph-based routing plans with optional on-demand calldata generation. 
+    SwapNet's swap endpoint provides graph-based routing plans with on-demand calldata generation. 
     Each routing plan specifies the exact amounts and tokens to trade with various liquidity sources, 
     including AMMs and market maker liquidity.
     
@@ -11,7 +11,7 @@ info:
   version: 1.0.0
   contact:
     name: SwapNet
-    url: https://swap-net.xyz
+    url: https://www.swap-net.xyz
 servers:
   - url: https://app.swap-net.xyz/api/v1.0
     description: Production server
@@ -21,7 +21,7 @@ paths:
     get:
       summary: Get swap routing plan
       description: |
-        Returns a graph-based routing plan for swapping tokens. The plan includes detailed routes 
+        Returns a graph-based routing plan for swap request. The plan includes detailed routes 
         through various liquidity sources and can optionally include encoded calldata for immediate execution.
       operationId: getSwapRoute
       parameters:
@@ -31,7 +31,6 @@ paths:
           description: Integer ID of the blockchain
           schema:
             type: integer
-            enum: [1, 137, 56, 43114, 42161, 10, 8453, 324, 534352, 81457, 999]
           example: 1
         
         - name: sellToken
@@ -42,7 +41,6 @@ paths:
             `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee`
           schema:
             type: string
-            pattern: '^0x[a-fA-F0-9]{40}$'
           example: "0x853d955acef822db058eb8505911ed77f175b99e"
         
         - name: buyToken
@@ -53,7 +51,6 @@ paths:
             `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee`
           schema:
             type: string
-            pattern: '^0x[a-fA-F0-9]{40}$'
           example: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
         
         - name: sellAmount
@@ -64,7 +61,6 @@ paths:
             Exactly one of sellAmount or buyAmount must be provided.
           schema:
             type: string
-            pattern: '^[1-9][0-9]*$'
           example: "10000000000000000000000"
         
         - name: buyAmount
@@ -75,7 +71,6 @@ paths:
             Exactly one of sellAmount or buyAmount must be provided.
           schema:
             type: string
-            pattern: '^[1-9][0-9]*$'
           example: "1000000000000000000"
         
         - name: useRfq
@@ -94,14 +89,12 @@ paths:
           schema:
             type: string
             enum: [
-              "default-router",
-              "swapnet-router", 
+              "swapnet-router",
               "universal-router",
-              "permit2-router",
-              "1inch-router"
+              "default-router"
             ]
             default: "default-router"
-          example: "default-router"
+          example: "swapnet-router"
         
         - name: includeCalldata
           in: query
@@ -119,7 +112,6 @@ paths:
             User's wallet address. Required when includeCalldata=true
           schema:
             type: string
-            pattern: '^0x[a-fA-F0-9]{40}$'
           example: "0x11b86991c6218b36c1d19d4a2e9eb0ce3606eb49"
         
         - name: slippageTolerance
@@ -227,9 +219,165 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tokens:
+    get:
+      summary: Get example tokens
+      description: |
+        Returns a list of example tokens for trading on the specified chain. Notice that this is not 
+        a full list of tradable tokens.
+      operationId: getTokens
+      parameters:
+        - name: chainId
+          in: query
+          required: true
+          description: Integer ID of the blockchain
+          schema:
+            type: integer
+          example: 1
         
-        '401':
-          description: Unauthorized - Invalid API key
+        - name: apiKey
+          in: query
+          required: true
+          description: Your API key
+          schema:
+            type: string
+          example: "your-api-key-here"
+
+      responses:
+        '200':
+          description: Successful tokens response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TokenInfo'
+              example:
+                - address: "0x853d955acef822db058eb8505911ed77f175b99e"
+                  name: "Frax"
+                  symbol: "FRAX"
+                  decimals: 18
+                  metadata:
+                    logoURI: "https://example.com/frax.png"
+                - address: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
+                  name: "Uniswap"
+                  symbol: "UNI"
+                  decimals: 18
+                  metadata:
+                    logoURI: "https://example.com/uni.png"
+        
+        '400':
+          description: Bad request - Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chains:
+    get:
+      summary: Get available chains
+      description: |
+        Returns a list of blockchain networks supported by the SwapNet aggregator.
+      operationId: getChains
+      parameters:
+        - name: apiKey
+          in: query
+          required: true
+          description: Your API key
+          schema:
+            type: string
+          example: "your-api-key-here"
+
+      responses:
+        '200':
+          description: Successful chains response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chain'
+              example:
+                - chainId: 1
+                  name: "Ethereum"
+                - chainId: 137
+                  name: "Polygon"
+                - chainId: 42161
+                  name: "Arbitrum One"
+        
+        '400':
+          description: Bad request - Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chainInfo:
+    get:
+      summary: Get detailed chain information
+      description: |
+        Returns detailed information about a specific blockchain network, including
+        supported routers, liquidity sources, and key token addresses.
+      operationId: getChainInfo
+      parameters:
+        - name: chainId
+          in: query
+          required: true
+          description: Integer ID of the blockchain
+          schema:
+            type: integer
+          example: 1
+        
+        - name: apiKey
+          in: query
+          required: true
+          description: Your API key
+          schema:
+            type: string
+          example: "your-api-key-here"
+
+      responses:
+        '200':
+          description: Successful chain info response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChainInfo'
+              example:
+                chainId: 1
+                name: "Ethereum"
+                usdTokenAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+                wrappedNativeTokenAddress: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+                routers:
+                  - name: "default-router"
+                    liquiditySources: ["UniswapV2", "UniswapV3", "SushiswapV2"]
+                    deployedAddress: "0x616000e384Ef1C2B52f5f3A88D57a3B64F23757e"
+                    hasEncoder: true
+        
+        '400':
+          description: Bad request - Invalid parameters
           content:
             application/json:
               schema:
@@ -291,13 +439,11 @@ components:
         routerAddress:
           type: string
           description: Address of router contract (only when includeCalldata=true)
-          pattern: '^0x[a-fA-F0-9]{40}$'
           example: "0x616000e384Ef1C2B52f5f3A88D57a3B64F23757e"
         
         calldata:
           type: string
           description: Calldata to settle the trade (only when includeCalldata=true)
-          pattern: '^0x[a-fA-F0-9]*$'
           example: "0x87395540000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001c0"
         
         gasLimit:
@@ -349,7 +495,6 @@ components:
         address:
           type: string
           description: Token contract address
-          pattern: '^0x[a-fA-F0-9]{40}$'
           example: "0x853d955acef822db058eb8505911ed77f175b99e"
         
         name:
@@ -385,7 +530,6 @@ components:
         address:
           type: string
           description: Address of the liquidity pool
-          pattern: '^0x[a-fA-F0-9]{40}$'
           example: "0xc63b0708e2f7e69cb8a1df0e1389a98c35a76d52"
         
         name:
@@ -448,6 +592,138 @@ components:
           type: object
           description: Additional error details
           additionalProperties: true
+
+    TokenInfo:
+      type: object
+      required:
+        - address
+        - name
+        - symbol
+        - decimals
+        - metadata
+      properties:
+        address:
+          type: string
+          description: Token contract address
+          example: "0x853d955acef822db058eb8505911ed77f175b99e"
+        
+        name:
+          type: string
+          description: Token name
+          example: "Frax"
+        
+        symbol:
+          type: string
+          description: Token symbol
+          example: "FRAX"
+        
+        decimals:
+          type: integer
+          description: Number of decimal places for the token
+          minimum: 0
+          maximum: 18
+          example: 18
+        
+        metadata:
+          type: object
+          required:
+            - logoURI
+          properties:
+            logoURI:
+              type: string
+              description: URL to the token's logo image
+              example: "https://example.com/frax.png"
+
+    Chain:
+      type: object
+      required:
+        - chainId
+        - name
+      properties:
+        chainId:
+          type: integer
+          description: Unique identifier for the blockchain network
+          example: 1
+        
+        name:
+          type: string
+          description: Human-readable name of the blockchain network
+          example: "Ethereum"
+
+    ChainInfo:
+      type: object
+      required:
+        - chainId
+        - name
+        - usdTokenAddress
+        - wrappedNativeTokenAddress
+        - routers
+      properties:
+        chainId:
+          type: integer
+          description: Unique identifier for the blockchain network
+          example: 1
+        
+        name:
+          type: string
+          description: Human-readable name of the blockchain network
+          example: "Ethereum"
+        
+        usdTokenAddress:
+          type: string
+          description: Address of the primary USD-pegged token on this chain
+          example: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        
+        wrappedNativeTokenAddress:
+          type: string
+          description: Address of the wrapped native token (e.g., WETH, WMATIC)
+          example: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        
+        routers:
+          type: array
+          description: Available router contracts and their configurations
+          items:
+            $ref: '#/components/schemas/RouterInfo'
+
+    RouterInfo:
+      type: object
+      required:
+        - name
+        - liquiditySources
+        - deployedAddress
+        - hasEncoder
+      properties:
+        name:
+          type: string
+          description: Router contract unique name
+          enum: [
+              "swapnet-router",
+              "universal-router",
+              "default-router"
+          ]
+          example: "swapnet-router"
+        
+        liquiditySources:
+          type: array
+          description: Supported liquidity sources for this router
+          items:
+            type: string
+          example: ["UniswapV2", "UniswapV3", "SushiswapV2"]
+        
+        deployedAddress:
+          type: string
+          description: Deployed address of the router contract
+          example: "0x616000e384Ef1C2B52f5f3A88D57a3B64F23757e"
+        
+        tokenProxyAddress:
+          type: string
+          description: Address of the token proxy contract (if applicable)
+          example: "0x1234567890abcdef1234567890abcdef12345678"
+        
+        hasEncoder:
+          type: boolean
+          description: Whether the router has an available encoder for calldata generation
+          example: true
 
   securitySchemes:
     ApiKeyAuth:

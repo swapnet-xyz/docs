@@ -39,7 +39,7 @@
       spec:
         ref:
           kind: openapi
-          spec: swap-openapi
+          spec: swapnet-api
     ```
 * [Contract](reference/contract/README.md)
   * [Deployment addresses](reference/contract/deployment-addresses.md)

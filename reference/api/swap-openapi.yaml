@@ -724,13 +724,3 @@ components:
           type: boolean
           description: Whether the router has an available encoder for calldata generation
           example: true
-
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: query
-      name: apiKey
-      description: API key for authentication
-
-security:
-  - ApiKeyAuth: []

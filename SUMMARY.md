@@ -5,6 +5,7 @@
 * [Overview](README.md)
 * [Competitive performance](overview/competitive-performance.md)
 * [Modularized design](overview/modularized-architecture.md)
+* [Contact us](overview/contact-us.md)
 
 ## Get started
 

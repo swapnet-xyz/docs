@@ -2,8 +2,6 @@
 
 <figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
-## Architecture Overview
-
 ### Core Flow
 
 The heart of our system follows a clean, two-stage process:

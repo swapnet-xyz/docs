@@ -28,13 +28,16 @@ https://app.swap-net.xyz/api/v1.0/swap
 | `useRfq`            | No (default: `false`)            | Whether to use market maker RFQ liquidity | `boolean`                                                                                                                                                 |
 | `router`            | No (default: `default-router`)   | Router contract unique name                   | Router unique names defined [here](https://github.com/swapnet-xyz/swapnet-sdk/blob/3ebb3511cd6abcf672b6f11742278b1ae1ba4e21/src/common/unames.ts#L64-L74) |
 | `includeCalldata`   | No (default: `false`)            | Whether to include calldata in the response | `boolean`                                                                                                                                                 |
-| `userAddress`       | Yes if `includeCalldata=true`    | User’s wallet address                       | Blockchain addresses                                                                                                                                      |
+| `userAddress`       | Yes if `includeCalldata=true`    | User's wallet address                       | Blockchain addresses                                                                                                                      |
+| `recipientAddress`  | No                               | The address to receive `buyToken`³          | Blockchain addresses                                                                                                                      |
 | `slippageTolerance` | Yes if `includeCalldata=true`    | Slippage tolerance (`0.01` = 1%)   | Decimal numbers between 0 and 1                                                                                                                                   |
 | `apiKey`            | Yes                              | Your API key                 | `string`                                                                                                                                                  |
 
 ¹ For native tokens, use either `0x0000000000000000000000000000000000000000` or `0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee` as the token address.
 
 ² Exactly one of `sellAmount` or `buyAmount` must be provided, but not both. Specify `sellAmount` for exact-input swaps or `buyAmount` for exact-output swaps.
+
+³ If not set, `buyToken` will be sent to `msg.sender`.
 
 ### Simple query example
 
